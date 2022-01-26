@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pokemon_app/app_core/app_core.dart';
 import 'package:pokemon_app/widgets/app_spacers.dart';
+import 'package:pokemon_app/widgets/text_widget.dart';
 import 'package:sizer/sizer.dart';
 
 class PAAppBar {
@@ -17,7 +18,6 @@ class PAAppBar {
   }) {
     final width = MediaQuery.of(context).size.width;
     return AppBar(
-
 /*
       leading: InkWell(
         onTap: () {
@@ -43,8 +43,6 @@ class PAAppBar {
       elevation: 0,
     );
   }
-
-
 }
 
 // ignore: must_be_immutable
@@ -52,35 +50,39 @@ class PAAppBarWithout extends StatelessWidget {
   PAAppBarWithout({
     Key? key,
     required this.onPressed,
+    required this.title,
     this.isDisableBack = false,
   }) : super(key: key);
   Function() onPressed;
   bool isDisableBack;
+  String title;
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      height: 12.h,
+      color: APPColors.appRed,
       padding: EdgeInsets.only(
           top: 5.h, left: PASpace.horizontal, right: PASpace.horizontal),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          isDisableBack
-              ? PASpacer()
-              : InkWell(
-                  onTap: onPressed,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle, color: APPColors.appWhite),
-                    child: const Icon(
-                      Icons.arrow_back,
-                    ),
-                  ),
-                ),
-          const Spacer(),
-          Container(
-            decoration: const BoxDecoration(
-                shape: BoxShape.circle, color: APPColors.appWhite),
-            child: const Icon(
-              Icons.person_sharp,
+          PAText.text(
+            text: title,
+            fontSize: 16.sp,
+            color: APPColors.appWhite,
+          ),
+          TextButton(
+            onPressed: () {
+              onPressed.call();
+            },
+            child: Container(
+              decoration: const BoxDecoration(
+                  shape: BoxShape.circle, color: APPColors.appWhite),
+              child: const Icon(
+                Icons.star,
+                color: APPColors.appRed,
+              ),
             ),
           ),
         ],

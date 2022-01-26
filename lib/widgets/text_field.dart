@@ -93,7 +93,7 @@ class _PATextFieldState extends State<PATextField> {
                   decoration: InputDecoration(
                       prefixIcon: widget._icon == null
                           ? null
-                          : Icon(widget._icon, color: APPColors.appTextGrey),
+                          : Icon(widget._icon, color: APPColors.appRed),
                       contentPadding: widget._icon != null
                           ? null
                           : EdgeInsets.symmetric(horizontal: 5.w),

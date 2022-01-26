@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pokemon_app/app_core/app_constants/app_colors.dart';
 import 'package:pokemon_app/app_core/app_constants/asset_path.dart';
+import 'package:pokemon_app/auth/view/login_view.dart';
 import 'package:pokemon_app/home/view/home_view.dart';
 import 'package:sizer/sizer.dart';
 
@@ -18,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(context, HomeScreen.route());
+      Navigator.pushReplacement(context, SignInScreen.route());
     });
   }
 

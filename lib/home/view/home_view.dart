@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pokemon_app/app_core/app_core.dart';
 import 'package:pokemon_app/detial/view/detial_view.dart';
+import 'package:pokemon_app/favourite/view/favourite_view.dart';
 import 'package:pokemon_app/home/view_model/home_view_model.dart';
+import 'package:pokemon_app/widgets/add_new_bottom_sheet.dart';
 import 'package:pokemon_app/widgets/app_bar.dart';
 import 'package:pokemon_app/widgets/app_loader.dart';
 import 'package:pokemon_app/widgets/app_spacers.dart';
@@ -27,23 +29,104 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
+  var _isVisible;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  late ScrollController _hideButtonController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    _isVisible = true;
+    _hideButtonController = ScrollController();
+    _hideButtonController.addListener(() {
+      _hideButtonController.position.isScrollingNotifier.addListener(() {
+        if (!_hideButtonController.position.isScrollingNotifier.value) {
+          setState(() {
+            _isVisible = true;
+          });
+        } else {
+          setState(() {
+            _isVisible = false;
+          });
+        }
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: PAAppBar.onlyIcon(context: context, title: "PokeMons"),
-        body: Column(
-          children: [
-            _Header(searchController: _searchController),
-            Expanded(
-              child: ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return PAListItem(index);
-                  }),
-            )
-          ],
-        ));
+      key: _scaffoldKey,
+      body: Column(
+        children: [
+          PAAppBarWithout(title:"PokeMons",onPressed: () {
+            Navigator.push(context, FavouriteScreen.route());
+          },),
+          _Header(searchController: _searchController),
+          Expanded(
+            child: ListView.builder(
+                controller: _hideButtonController,
+                itemCount: 10,
+                itemBuilder: (context, index) {
+                  return PAListItem(index);
+                }),
+          )
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Visibility(
+        visible: _isVisible,
+        child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+                margin: EdgeInsets.only(
+                    left: MediaQuery.of(context).size.height / 7,
+                    right: MediaQuery.of(context).size.height / 7),
+                width: 40.w,
+                height: 6.h,
+                decoration: BoxDecoration(
+                  color: APPColors.appRed,
+                  borderRadius: BorderRadius.circular(6),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey[600]!,
+                      blurRadius: 30,
+                      offset: Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: InkWell(
+                  onTap: () {
+                    openBottomSheet();
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add_circle_outline_sharp,
+                        color: Colors.white,
+                        size: 20.sp,
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        "Add New",
+                        style: TextStyle(
+                          fontFamily: 'Futura',
+                          fontSize: 12.sp,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ))),
+      ),
+    );
   }
 
   Widget PAListItem(int index) {
@@ -97,9 +180,30 @@ class _HomeScreenState extends State<HomeScreen> {
         height: 60,
         width: 60,
         decoration: PADecorations.cicularWithShadow(),
-        child: const Icon(Icons.error),
+        child: const Icon(Icons.error,color: APPColors.appRed,),
       ),
     );
+  }
+
+  void openBottomSheet() {
+    showModalBottomSheet(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+        ),
+        backgroundColor: Colors.white,
+        context: _scaffoldKey.currentContext!,
+        isScrollControlled: true,
+        builder: (BuildContext ctx) {
+          return Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.45,
+              width: MediaQuery.of(context).size.width,
+              child: AddNewBottomSheet(),
+            ),
+          );
+        });
   }
 }
 

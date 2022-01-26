@@ -35,10 +35,24 @@ class _DetailScreenState extends State<DetailScreen> {
             PASpacer(height: 5.h,),
             _getRespectedImage(),
             PASpacer(height: 2.h,),
-            PAText.text(text: "Name",fontSize: 22.sp,),
+            Container(
+              padding: EdgeInsets.only(left: 10.w,right: 10.w),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  PAText.text(text: "Name",fontSize: 22.sp,),
+                  PASpacer.width(width: 2,),
+                  const Align(
+                      alignment: Alignment.topRight ,
+                      child: Icon(Icons.favorite_border_rounded,color: APPColors.appRed,))
+                ],
+              ),
+            )
+            ,
             Expanded(
               child: Container(
-                margin: EdgeInsets.only(left: 10.w,top: 5.h),
+                margin: EdgeInsets.only(left: 10.w,top: 2.h),
                 child: ListView.builder(
                     itemCount: 3,
                     itemBuilder: (context, index) {
@@ -55,15 +69,15 @@ class _DetailScreenState extends State<DetailScreen> {
     return Row(
       children: [
         Container(
-          width: 4.w,
-          height: 4.h,
+          width: 3.w,
+          height: 3.h,
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: APPColors.appRed,
           ),
         ),
         PASpacer.width(width: 5,),
-        PAText.text(text: "Item No. $index",fontSize: 15.sp,),
+        PAText.text(text: "Item No. $index",fontSize: 13.sp,),
       ],
     );
   }
@@ -89,7 +103,7 @@ class _DetailScreenState extends State<DetailScreen> {
         height: 120,
         width: 120,
         decoration: PADecorations.cicularWithShadow(),
-        child: const Icon(Icons.error),
+        child: const Icon(Icons.error,color: APPColors.appRed,),
       ),
     );
   }
