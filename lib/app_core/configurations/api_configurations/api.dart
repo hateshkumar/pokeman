@@ -11,8 +11,12 @@ class Api {
 
   ///---------------Home APIS -----------------
 
-  Future<ApiResponse> get getTransaction async {
-    ApiResponse res = await MyClient().get(ENP.customerTransaction);
+  Future<ApiResponse> get getPokemonList async {
+    ApiResponse res = await MyClient().get(ENP.baseUrl+ENP.pokemonList);
+    return res;
+  }
+  Future<ApiResponse>  getPokemonDetail(String url) async {
+    ApiResponse res = await MyClient().get(url);
     return res;
   }
 }

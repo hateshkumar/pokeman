@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:pokemon_app/app_core/app_core.dart';
 import 'package:pokemon_app/detial/view/detial_view.dart';
 import 'package:pokemon_app/favourite/view/favourite_view.dart';
+import 'package:pokemon_app/home/models/pokemon_detail_model.dart';
 import 'package:pokemon_app/home/view_model/home_view_model.dart';
 import 'package:pokemon_app/widgets/add_new_bottom_sheet.dart';
 import 'package:pokemon_app/widgets/app_bar.dart';
@@ -60,22 +61,34 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      body: Column(
-        children: [
-          PAAppBarWithout(title:"PokeMons",onPressed: () {
-            Navigator.push(context, FavouriteScreen.route());
-          },),
-          _Header(searchController: _searchController),
-          Expanded(
-            child: ListView.builder(
-                controller: _hideButtonController,
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return PAListItem(index);
-                }),
-          )
-        ],
-      ),
+      body: ViewModelBuilder<HomeViewModel>.reactive(
+          viewModelBuilder: () =>
+              HomeViewModel(homeService: context.watch<HomeService>()),
+          onModelReady: (model) {
+            model.getPokemonList;
+          },
+          builder: (context, homeViewModel, child) {
+            return Column(
+              children: [
+                PAAppBarWithout(
+                  title: "PokeMons",
+                  onPressed: () {
+                    Navigator.push(context, FavouriteScreen.route());
+                  },
+                ),
+                _Header(searchController: _searchController),
+                Expanded(
+                  child: ListView.builder(
+                      controller: _hideButtonController,
+                      itemCount: homeViewModel.pokemonDetail?.length,
+                      itemBuilder: (context, index) {
+                        var pokemonDetailModel = homeViewModel.pokemonDetail?[index];
+                        return PAListItem(index,pokemonDetailModel);
+                      }),
+                )
+              ],
+            );
+          }),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Visibility(
         visible: _isVisible,
@@ -129,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget PAListItem(int index) {
+  Widget PAListItem(int index, PokemonDetailModel? pokemonDetailModel) {
     return TextButton(
       onPressed: () {
         Navigator.push(context, DetailScreen.route());
@@ -150,20 +163,20 @@ class _HomeScreenState extends State<HomeScreen> {
             PASpacer.width(
               width: 2.w,
             ),
-            _getRespectedImage(),
+            _getRespectedImage(pokemonDetailModel?.sprites?.other?.home?.frontShiny),
             PASpacer.width(
               width: 2.w,
             ),
-            PAText.text(text: "Item No. $index"),
+            PAText.text(text: "${pokemonDetailModel?.name}"),
           ],
         ),
       ),
     );
   }
 
-  Widget _getRespectedImage() {
+  Widget _getRespectedImage(String? imageUrl) {
     return CachedNetworkImage(
-      imageUrl: "",
+      imageUrl: imageUrl!,
       imageBuilder: (context, imageProvider) => Container(
         height: 60,
         width: 60,
@@ -180,7 +193,10 @@ class _HomeScreenState extends State<HomeScreen> {
         height: 60,
         width: 60,
         decoration: PADecorations.cicularWithShadow(),
-        child: const Icon(Icons.error,color: APPColors.appRed,),
+        child: const Icon(
+          Icons.error,
+          color: APPColors.appRed,
+        ),
       ),
     );
   }
