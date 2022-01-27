@@ -9,36 +9,41 @@ class HomeViewModel extends BaseViewModel {
   final HomeService? _homeService;
   List<PokemonListResults>? _pokemonList;
   List<PokemonDetailModel>? _pokemonDetail;
+  List<PokemonDetailModel>? pokemonDetailList = [];
+
+  List<PokemonDetailModel>? get pokemonDetail => _pokemonDetail;
 
 
-  List<PokemonDetailModel>?get pokemonDetail => _pokemonDetail;
-
+  set pokemonDetail(List<PokemonDetailModel>? value) {
+    _pokemonDetail = value;
+    notifyListeners();
+  }
 
   void get getPokemonList async {
     setInitialised(true);
     ApiResponse res = await _homeService!.getPokemonList;
     if (res is ApiSuccess) {
       _pokemonList = PokemonModel.fromJson(res.apiModel.data).results;
-      _pokemonList?.forEach((element) {
-        getPokemonDetail(element.url!);
+
+      _pokemonList?.forEach((element) async {
+        getPokemonDetail(element.url!)
+            .then((value) {
+          pokemonDetailList?.add(value);
+          pokemonDetail = pokemonDetailList;
+          notifyListeners();
+        });
+
       });
     } else if (res is ApiFail) {
       setInitialised(false);
-
-      setError(res.apiModel.message);
-    }
-  }
-
-  Future<ApiResponse> getPokemonDetail(String url) async {
-    ApiResponse res = await _homeService!.getPokemonDetail(url: url);
-    if (res is ApiSuccess) {
-      _pokemonDetail?.add(PokemonDetailModel.fromJson(res.apiModel.data));
-    } else if (res is ApiFail) {
       setError(res.apiModel.message);
     }
     setInitialised(false);
 
-    notifyListeners();
-    return res;
+  }
+
+  Future<PokemonDetailModel> getPokemonDetail(String url) async {
+    ApiResponse res = await _homeService!.getPokemonDetail(url: url);
+    return PokemonDetailModel.fromJson(res.apiModel?.data);
   }
 }

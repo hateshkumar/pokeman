@@ -33,7 +33,9 @@ class _HomeScreenState extends State<HomeScreen> {
   var _isVisible;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
+
   late ScrollController _hideButtonController;
+  late HomeService homeService;
 
   @override
   void initState() {
@@ -77,7 +79,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
                 _Header(searchController: _searchController),
-                Expanded(
+               homeViewModel.initialised? Container(
+                   margin: EdgeInsets.only(top: 20.h),
+                   child: Center(child: loader,)): Expanded(
                   child: ListView.builder(
                       controller: _hideButtonController,
                       itemCount: homeViewModel.pokemonDetail?.length,
@@ -85,7 +89,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         var pokemonDetailModel = homeViewModel.pokemonDetail?[index];
                         return PAListItem(index,pokemonDetailModel);
                       }),
-                )
+                ),
+                PASpacer(height: 5.h,)
               ],
             );
           }),
@@ -143,9 +148,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget PAListItem(int index, PokemonDetailModel? pokemonDetailModel) {
+    print("pokemonDetailModel ${pokemonDetailModel.toString()}");
+
     return TextButton(
       onPressed: () {
-        Navigator.push(context, DetailScreen.route());
+
+        Navigator.push(context, DetailScreen.route(pokemonDetailModel));
       },
       child: Container(
         height: 12.h,

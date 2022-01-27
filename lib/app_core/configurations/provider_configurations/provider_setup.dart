@@ -5,9 +5,14 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
 List<SingleChildWidget> providers = [
+  ...apis,
   ...homeServices,
 ];
 
+//apis
+List<SingleChildWidget> apis = [
+  Provider<Api>.value(value: Api()),
+];
 
 /* Home Service */
 List<SingleChildWidget> homeServices = [

@@ -34,6 +34,10 @@ class PokemonDetailModel {
     return map;
   }
 
+  @override
+  String toString() {
+    return 'PokemonDetailModel{id: $id, name: $name, sprites: $sprites, types: $types}';
+  }
 }
 
 class Types {
@@ -97,6 +101,10 @@ class Sprites {
     return map;
   }
 
+  @override
+  String toString() {
+    return 'Sprites{other: $other}';
+  }
 }
 
 class Other {
@@ -116,6 +124,10 @@ class Other {
     return map;
   }
 
+  @override
+  String toString() {
+    return 'Other{home: $home}';
+  }
 }
 
 class Home {
@@ -145,4 +157,8 @@ class Home {
     return map;
   }
 
+  @override
+  String toString() {
+    return 'Home{frontDefault: $frontDefault, frontFemale: $frontFemale, frontShiny: $frontShiny, frontShinyFemale: $frontShinyFemale}';
+  }
 }

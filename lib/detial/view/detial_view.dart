@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pokemon_app/app_core/app_core.dart';
+import 'package:pokemon_app/home/models/pokemon_detail_model.dart';
 import 'package:pokemon_app/home/view_model/home_view_model.dart';
 import 'package:pokemon_app/widgets/app_bar.dart';
 import 'package:pokemon_app/widgets/app_loader.dart';
@@ -14,14 +15,16 @@ import 'package:sizer/sizer.dart';
 import 'package:stacked/stacked.dart';
 
 class DetailScreen extends StatefulWidget {
-  const DetailScreen({Key? key}) : super(key: key);
 
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (context) => const DetailScreen());
+  PokemonDetailModel? pokemonDetailModel;
+  static Route route(PokemonDetailModel? pokemonDetailModel) {
+    return MaterialPageRoute<void>(builder: (context) =>  DetailScreen(pokemonDetailModel));
   }
 
   @override
   _DetailScreenState createState() => _DetailScreenState();
+
+  DetailScreen(this.pokemonDetailModel);
 }
 
 class _DetailScreenState extends State<DetailScreen> {
@@ -33,7 +36,7 @@ class _DetailScreenState extends State<DetailScreen> {
         body: Column(
           children: [
             PASpacer(height: 5.h,),
-            _getRespectedImage(),
+            _getRespectedImage(widget.pokemonDetailModel?.sprites?.other?.home?.frontShiny),
             PASpacer(height: 2.h,),
             Container(
               padding: EdgeInsets.only(left: 10.w,right: 10.w),
@@ -41,7 +44,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  PAText.text(text: "Name",fontSize: 22.sp,),
+                  PAText.text(text: widget.pokemonDetailModel!.name.toString(),fontSize: 22.sp,),
                   PASpacer.width(width: 2,),
                   const Align(
                       alignment: Alignment.topRight ,
@@ -54,9 +57,9 @@ class _DetailScreenState extends State<DetailScreen> {
               child: Container(
                 margin: EdgeInsets.only(left: 10.w,top: 2.h),
                 child: ListView.builder(
-                    itemCount: 3,
+                    itemCount: widget.pokemonDetailModel!.types!.length,
                     itemBuilder: (context, index) {
-                      return PADetailTypeListItem(index);
+                      return PADetailTypeListItem(index,widget.pokemonDetailModel!.types![index]);
                     }),
               ),
             )
@@ -65,7 +68,7 @@ class _DetailScreenState extends State<DetailScreen> {
         ));
   }
 
-  Widget PADetailTypeListItem(int index) {
+  Widget PADetailTypeListItem(int index, Types types) {
     return Row(
       children: [
         Container(
@@ -77,16 +80,17 @@ class _DetailScreenState extends State<DetailScreen> {
           ),
         ),
         PASpacer.width(width: 5,),
-        PAText.text(text: "Item No. $index",fontSize: 13.sp,),
+        PAText.text(text: types.type!.name! ,fontSize: 13.sp,),
       ],
     );
   }
 
 
 
-  Widget _getRespectedImage() {
+  Widget _getRespectedImage(String? frontShiny) {
+    print(frontShiny);
     return CachedNetworkImage(
-      imageUrl: "",
+      imageUrl: frontShiny!,
       imageBuilder: (context, imageProvider) => Container(
         height: 120,
         width: 120,

@@ -15,13 +15,14 @@ class MyClient {
     ApiResponse _apiResponse = ApiIntial(_model);
 
     // ignore: avoid_print
-    print("BODY ${res.body}");
+//    print("BODY ${res.body}");
 
     try {
       var data = json.decode(res.body);
-      _model.data = _model.status != 200 ? null : json.decode(res.body);
+      _model.data = data;
+      _model.message = "Success";
 
-      if (_model.status == 200) {
+      if (data != null) {
         _apiResponse = ApiSuccess(_model);
       } else {
         _apiResponse = ApiFail(_model);
