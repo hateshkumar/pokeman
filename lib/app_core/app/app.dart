@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pokemon_app/app_core/app_constants/app_colors.dart';
-import 'package:pokemon_app/app_core/app_constants/app_constants.dart';
-import 'package:pokemon_app/app_core/configurations/provider_configurations/multi_provider.dart';
 import 'package:pokemon_app/splash/view/splash_view.dart';
 
 

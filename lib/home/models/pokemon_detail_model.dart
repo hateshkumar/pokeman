@@ -31,6 +31,8 @@ class PokemonDetailModel {
     if (types != null) {
       map['types'] = types?.map((v) => v.toJson()).toList();
     }
+
+
     return map;
   }
 
@@ -82,6 +84,10 @@ class Type {
     return map;
   }
 
+  @override
+  String toString() {
+    return '$name,';
+  }
 }
 
 class Sprites {
@@ -160,5 +166,37 @@ class Home {
   @override
   String toString() {
     return 'Home{frontDefault: $frontDefault, frontFemale: $frontFemale, frontShiny: $frontShiny, frontShinyFemale: $frontShinyFemale}';
+  }
+}
+
+
+class PokemonFavoriteModel {
+  PokemonFavoriteModel({
+    this.id,
+    this.name,
+    this.image,
+   });
+
+  PokemonFavoriteModel.fromJson(dynamic json) {
+    id = json['id'];
+    name = json['name'];
+    image = json['image'];
+  }
+  String? id;
+  String? name;
+  String? image;
+
+  Map<String, dynamic> toJson() {
+    final map = <String, dynamic>{};
+    map['id'] = id;
+    map['name'] = name;
+    map['image'] = name;
+
+    return map;
+  }
+
+  @override
+  String toString() {
+    return 'PokemonFavoriteModel{id: $id, name: $name, image: $image}';
   }
 }

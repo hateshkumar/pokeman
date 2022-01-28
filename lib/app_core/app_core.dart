@@ -9,7 +9,7 @@ export 'app_constants/app_endpoints.dart';
 
 export 'configurations/provider_configurations/provider_setup.dart';
 export 'configurations/provider_configurations/multi_provider.dart';
-export 'configurations/local_sotrage_configurations/local_storage.dart';
+export 'configurations/local_sotrage_configurations/db_helper.dart';
 
 export 'package:pokemon_app/home/services/home_service.dart';
 

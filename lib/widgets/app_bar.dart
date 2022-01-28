@@ -63,7 +63,7 @@ class PAAppBarWithout extends StatelessWidget {
       height: 12.h,
       color: APPColors.appRed,
       padding: EdgeInsets.only(
-          top: 5.h, left: PASpace.horizontal, right: PASpace.horizontal),
+          top: 5.h, left: PASpace.horizontal),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

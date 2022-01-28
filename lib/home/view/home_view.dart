@@ -33,9 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
   var _isVisible;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-
   late ScrollController _hideButtonController;
-  late HomeService homeService;
+  late HomeViewModel homeViewModel;
 
   @override
   void initState() {
@@ -45,6 +44,10 @@ class _HomeScreenState extends State<HomeScreen> {
     _isVisible = true;
     _hideButtonController = ScrollController();
     _hideButtonController.addListener(() {
+      if ((_hideButtonController.position.pixels ==
+          _hideButtonController.position.maxScrollExtent)) {
+        homeViewModel.getPokemonListpaginationData;
+      }
       _hideButtonController.position.isScrollingNotifier.addListener(() {
         if (!_hideButtonController.position.isScrollingNotifier.value) {
           setState(() {
@@ -68,31 +71,69 @@ class _HomeScreenState extends State<HomeScreen> {
               HomeViewModel(homeService: context.watch<HomeService>()),
           onModelReady: (model) {
             model.getPokemonList;
+            homeViewModel = model;
           },
           builder: (context, homeViewModel, child) {
-            return Column(
-              children: [
-                PAAppBarWithout(
-                  title: "PokeMons",
-                  onPressed: () {
-                    Navigator.push(context, FavouriteScreen.route());
-                  },
-                ),
-                _Header(searchController: _searchController),
-               homeViewModel.initialised? Container(
-                   margin: EdgeInsets.only(top: 20.h),
-                   child: Center(child: loader,)): Expanded(
-                  child: ListView.builder(
-                      controller: _hideButtonController,
-                      itemCount: homeViewModel.pokemonDetail?.length,
-                      itemBuilder: (context, index) {
-                        var pokemonDetailModel = homeViewModel.pokemonDetail?[index];
-                        return PAListItem(index,pokemonDetailModel);
-                      }),
-                ),
-                PASpacer(height: 5.h,)
-              ],
-            );
+            print(homeViewModel.isSearchFound);
+            return (homeViewModel.hasError)
+                ? Container(
+                    margin: EdgeInsets.only(top: 20.h),
+                    child: error(
+                        text: homeViewModel.modelError,
+                        onPressed: () async {
+                          homeViewModel.clearErrors();
+                          homeViewModel.getPokemonList;
+                        }),
+                  )
+                : Column(
+                    children: [
+                      PAAppBarWithout(
+                        title: "PokeMons",
+                        onPressed: () {
+                          Navigator.push(context, FavouriteScreen.route());
+                        },
+                      ),
+                      _Header(
+                        searchController: _searchController,
+                        homeViewModel: homeViewModel,
+                      ),
+                      !homeViewModel.isSearchFound!
+                          ? Container(
+                              margin: EdgeInsets.only(left: 8.w),
+                              child: PAText.headerText(
+                                text: 'Pokemon is not available!',
+                                color: APPColors.appRed,
+                                fontSize: 10.sp,
+                              ),
+                            )
+                          : Container(),
+                      homeViewModel.initialised
+                          ? Container(
+                              margin: EdgeInsets.only(top: 20.h),
+                              child: Center(
+                                child: loader,
+                              ))
+                          : Expanded(
+                              child: ListView.builder(
+                                  controller: _hideButtonController,
+                                  itemCount: homeViewModel.searchList?.length,
+                                  itemBuilder: (context, index) {
+                                    var pokemonDetailModel =
+                                        homeViewModel.searchList?[index];
+                                    return PAListItem(
+                                        index, pokemonDetailModel);
+                                  }),
+                            ),
+                      homeViewModel.pagination!
+                          ? Center(
+                              child: loader,
+                            )
+                          : Container(),
+                      PASpacer(
+                        height: 5.h,
+                      )
+                    ],
+                  );
           }),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Visibility(
@@ -148,19 +189,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget PAListItem(int index, PokemonDetailModel? pokemonDetailModel) {
-    print("pokemonDetailModel ${pokemonDetailModel.toString()}");
-
     return TextButton(
       onPressed: () {
-
-        Navigator.push(context, DetailScreen.route(pokemonDetailModel));
+        Navigator.push(context, DetailScreen.route(pokemonDetailModel))
+            .then((value) => homeViewModel.resetSearch());
       },
       child: Container(
         height: 12.h,
         margin: EdgeInsets.only(
           left: PASpace.horizontal,
           right: PASpace.horizontal,
-          top: 2,
           bottom: 2,
         ),
         decoration: BoxDecoration(
@@ -171,7 +209,8 @@ class _HomeScreenState extends State<HomeScreen> {
             PASpacer.width(
               width: 2.w,
             ),
-            _getRespectedImage(pokemonDetailModel?.sprites?.other?.home?.frontShiny),
+            _getRespectedImage(
+                pokemonDetailModel?.sprites?.other?.home?.frontShiny),
             PASpacer.width(
               width: 2.w,
             ),
@@ -232,11 +271,16 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({Key? key, required TextEditingController searchController})
+  const _Header(
+      {Key? key,
+      required TextEditingController searchController,
+      required HomeViewModel homeViewModel})
       : _searchController = searchController,
+        _homeViewModel = homeViewModel,
         super(key: key);
 
   final TextEditingController _searchController;
+  final HomeViewModel _homeViewModel;
 
   @override
   Widget build(BuildContext context) {
@@ -258,7 +302,10 @@ class _Header extends StatelessWidget {
             hintText: 'Search Pokemon',
             icon: Icons.search,
             borderRadius: 10,
-            validator: (String val) async {},
+            validator: (String val) async {
+              print(val);
+              _homeViewModel.searchPokemon(val);
+            },
           ),
         ],
       ),

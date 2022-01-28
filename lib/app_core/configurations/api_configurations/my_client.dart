@@ -4,7 +4,6 @@ class MyClient {
   final Map<String, String> defaultHeaders;
   final http.Client _httpClient = http.Client();
   final baseUrl = ENP.baseUrl;
-  final LocalStorage _localStorage = LocalStorage();
 
   MyClient({this.defaultHeaders = const {}});
 
